@@ -50,7 +50,7 @@ MAINID = "PutMainNNIDUsernameHere"
 
 ## Running
 Make sure Discord is currently open, then open a terminal in the same directory as `dau.py` and type the following:
-```
+```bash
 python3 dau.py
 ```
 If you see the following output, then you should be set!
