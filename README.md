@@ -4,7 +4,7 @@ Show your Discord friends what Wii U game you're playing!
 ![Image Preview](https://i.imgur.com/jUpVsFU.png)
 
 ## How does this work?
-This Python program uses code from ![NintendoClients](https://github.com/Kinnay/NintendoClients) and ![python-discord-rpc](https://github.com/suclearnub/python-discord-rpc) to log into a Wii U account (with NNID linked), and view your status on the Wii U Friend List, and from there the script should automatically detect your Discord instance running on your PC and display what game you are playing!
+This Python program uses code from ![NintendoClients](https://github.com/Kinnay/NintendoClients) and ![python-discord-rpc](https://github.com/suclearnub/python-discord-rpc) to log into a Wii U account (with NNID linked), and view your status on the Wii U Friend List, and from there the script should automatically detect the Discord instance running on your PC and display what game you are playing!
 
 ## Prerequisites
 ### Software
@@ -49,7 +49,7 @@ MAINID = "PutMainNNIDUsernameHere"
 ```
 
 ## Running
-Open a terminal in the same directory as `dau.py` and type the following:
+Make sure Discord is currently open, then open a terminal in the same directory as `dau.py` and type the following:
 ```
 python3 dau.py
 ```
