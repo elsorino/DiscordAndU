@@ -54,6 +54,8 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 					title_name = "Wii U Menu"
 				elif title_id == "000500001010ED00":
 					title_name = "MARIO KART 8"
+				elif title_id == "000500001010CD00":
+					title_name = "MARIO KART 8"
 				elif title_id == "0005000010176A00":
 					title_name = "Splatoon"
 				elif title_id == "00050000101C9500":
