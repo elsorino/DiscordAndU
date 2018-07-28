@@ -7,11 +7,12 @@ Show your Discord friends what Wii U game you're playing!
 This Python program uses code from ![NintendoClients](https://github.com/Kinnay/NintendoClients) and ![python-discord-rpc](https://github.com/suclearnub/python-discord-rpc) to log into a Wii U account (with NNID linked), and view your status on the Wii U Friend List, and from there the script should automatically detect your Discord instance running on your PC and display what game you are playing!
 
 ## Prerequisites
-* Python 3
-* Git
-* Discord
-* Wii U Console
-* Wii U User/Account (Must have NNID linked)
+### Software
+* ![Python 3](https://www.python.org/downloads/)
+* ![Git](https://git-scm.com/downloads)
+* ![Discord](https://www.discordapp.com/)
+### Wii U
+* Main Wii U User/Account (Must have NNID linked)
 * Secondary Wii U User/Account (Must also have DIFFERENT NNID linked)
 * Wii U Console Details
 	* Device ID (Can be found using either ![Fiddler](https://www.telerik.com/download/fiddler) or by following ![this](https://gbatemp.net/threads/question-how-can-i-find-my-device-id.487981/#post-7661403))
