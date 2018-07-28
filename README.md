@@ -41,7 +41,7 @@ REGION = 4 # Europe (PAL)
 COUNTRY = "GB" # United Kingdom (Great Britain)
 ```
 
-Next, you'll need a secondary Wii U account with an NNID linked. Make sure to friend this account from your main account (or vice versa, just make sure that they are friends. Also, you'll need to open Friend List on your main account, and make sure that "Allow friends to see what you are playing?" is set to Allow.
+Next, you'll need a secondary Wii U account with an NNID linked. Make sure to friend this account from your main account (or vice versa, just make sure that they are friends.) Also, you'll need to open Friend List on your main account, and make sure that "Allow friends to see what you are playing?" is set to Allow.
 
 Now, underneath the Wii U Console Details in the `dau.py` file, you'll see 2 variables:
 ```py
