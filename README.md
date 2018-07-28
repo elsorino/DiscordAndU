@@ -9,7 +9,9 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 ## Prerequisites
 ### Software
 * [Python 3](https://www.python.org/downloads/)
-* [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
+	* [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
+	* [Requests](https://pypi.org/project/requests/)
+	* [lxml](https://pypi.org/project/lxml/)
 * [Git](https://git-scm.com/downloads)
 * [Discord](https://www.discordapp.com/)
 ### Wii U
