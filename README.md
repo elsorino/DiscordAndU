@@ -54,3 +54,4 @@ python3 dau.py
 ```
 If you see the following output, then you should be set!
 ![Execution](https://i.imgur.com/um9eiKv.png)
+You can now open your Wii U game of choice and show off!
