@@ -106,7 +106,7 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 					},
 					"assets": {
 						"small_text": MAINID,
-						"small_image": nn,
+						"small_image": "nn",
 						"large_text": title_name,
 						"large_image": title_id.lower()
 					}
