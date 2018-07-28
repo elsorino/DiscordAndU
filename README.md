@@ -17,8 +17,8 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 * Wii U Console Details
 	* Device ID (Can be found using either [Fiddler](https://www.telerik.com/download/fiddler) or by following [this](https://gbatemp.net/threads/question-how-can-i-find-my-device-id.487981/#post-7661403))
 	* Serial Number (Found on bottom side at rear of console)
-	* System Version (0x230 for 5.5.2)
-	* System Region (4 for Europe)
+	* System Version (0x230 for 5.5.2, 0x220 for 5.5.1)
+	* System Region (4 for Europe, 2 for USA)
 	* System Country (GB for United Kingdom (Great Britain))
 
 ## Download
