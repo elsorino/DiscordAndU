@@ -22,7 +22,10 @@ This Python program uses code from ![NintendoClients](https://github.com/Kinnay/
 	* System Country (GB for United Kingdom (Great Britain))
 
 ## Download
-`git clone https://github.com/2secslater/DiscordAndU.git && cd DiscordAndU`
+In a terminal window, enter the following:
+```bash
+git clone https://github.com/2secslater/DiscordAndU.git && cd DiscordAndU
+```
 
 ## Configuration
 Open `dau.py` with your preferred text editor (I recommend Vim or Notepad++), and replace the following variables with your Wii U Console details that you (hopefully) took note of earlier.
