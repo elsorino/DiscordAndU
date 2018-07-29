@@ -1,26 +1,22 @@
 
 from nintendo.nex import backend, authentication, friends, nintendo_notification
 from nintendo import account
+from config import (
+	DEVICE_ID,
+	SERIAL_NUMBER,
+	SYSTEM_VERSION,
+	REGION,
+	COUNTRY,
+	USERNAME,
+	PASSWORD,
+	MAINID
+)
 import rpc
 import time
 
 client_id = '472185292636291082'
 rpc_obj = rpc.DiscordIpcClient.for_platform(client_id)
 print("RPC connection successful.")
-
-# Wii U Console Details
-DEVICE_ID = 1111111111
-SERIAL_NUMBER = "xxxxxxxxxxxx"
-SYSTEM_VERSION = 0x230 # 5.5.2E
-REGION = 4 # Europe (PAL)
-COUNTRY = "GB" # United Kingdom (Great Britain)
-
-# Wii U Secondary User/Account Details
-USERNAME = "PutSecondaryNNIDUsernameHere"
-PASSWORD = "PutSecondaryNNIDPasswordHere"
-
-# Wii U Main User/Account NNID
-MAINID = "PutMainNNIDUsernameHere"
 
 
 class NotificationHandler(nintendo_notification.NintendoNotificationHandler):

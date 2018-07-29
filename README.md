@@ -31,7 +31,7 @@ git clone https://github.com/2secslater/DiscordAndU.git && cd DiscordAndU
 ```
 
 ## Configuration
-Open `dau.py` with your preferred text editor (I recommend Vim or Notepad++), and replace the following variables with your Wii U Console details that you (hopefully) took note of earlier.
+Copy `config.example.py` and rename it to `config.py`, then open it with your preferred text editor (I recommend Vim or Notepad++), and replace the following variables with your Wii U Console details that you (hopefully) took note of earlier.
 
 ```py
 DEVICE_ID = 1111111111
