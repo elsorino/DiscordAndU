@@ -18,16 +18,16 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 * Main Wii U User/Account (Must have NNID linked)
 * Secondary Wii U User/Account (Must also have DIFFERENT NNID linked)
 * Wii U Console Details
-	* Device ID (Can be found using either [Fiddler](https://www.telerik.com/download/fiddler) or by following [this](https://gbatemp.net/threads/question-how-can-i-find-my-device-id.487981/#post-7661403))
-	* Serial Number (Found on bottom side at rear of console)
-	* System Version (0x230 for 5.5.2, 0x220 for 5.5.1)
+	* Device ID (Best found by using [Pretendo Installer](https://github.com/PretendoNetwork/network-installer))
+	* Serial Number (Found on bottom side at rear of console or in Pretendo Installer)
+	* System Version (0x240 for 5.5.3, 0x250 for 5.5.4)
 	* System Region (4 for Europe, 2 for USA)
-	* System Country (GB for United Kingdom (Great Britain))
+	* System Country (GB for UK, US for USA)
 
 ## Download
 In a terminal window, enter the following:
 ```bash
-git clone https://github.com/2secslater/DiscordAndU.git && cd DiscordAndU
+git clone https://github.com/elsorino/DiscordAndU.git && cd DiscordAndU
 ```
 
 ## Configuration
@@ -36,7 +36,7 @@ Copy `config.example.py` and rename it to `config.py`, then open it with your pr
 ```py
 DEVICE_ID = 1111111111
 SERIAL_NUMBER = "xxxxxxxxxxxx"
-SYSTEM_VERSION = 0x230 # 5.5.2E
+SYSTEM_VERSION = 0x240 # 5.5.3
 REGION = 4 # Europe (PAL)
 COUNTRY = "GB" # United Kingdom (Great Britain)
 ```
