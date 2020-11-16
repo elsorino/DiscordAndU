@@ -8,7 +8,8 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 
 ## Prerequisites
 ### Software
-* [Python 3](https://www.python.org/downloads/)
+* [Python 3.7](https://www.python.org/downloads/)
+	* I recommend using something like pyenv for this
 	* [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
 	* [Requests](https://pypi.org/project/requests/)
 	* [lxml](https://pypi.org/project/lxml/)
