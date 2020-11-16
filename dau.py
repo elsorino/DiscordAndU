@@ -1,26 +1,23 @@
-
 from nintendo.nex import backend, authentication, friends, nintendo_notification
 from nintendo import account
-import rpc
+from config import (
+	DEVICE_ID,
+	SERIAL_NUMBER,
+	SYSTEM_VERSION,
+	REGION,
+	COUNTRY,
+	USERNAME,
+	PASSWORD,
+	MAINID
+)
+from pypresence import Presence
 import time
+import sys
 
-client_id = '472185292636291082'
-rpc_obj = rpc.DiscordIpcClient.for_platform(client_id)
+client_id = '777243864682725406'
+RPC = Presence(client_id,pipe=0)
+RPC.connect()
 print("RPC connection successful.")
-
-# Wii U Console Details
-DEVICE_ID = 1111111111
-SERIAL_NUMBER = "xxxxxxxxxxxx"
-SYSTEM_VERSION = 0x230 # 5.5.2E
-REGION = 4 # Europe (PAL)
-COUNTRY = "GB" # United Kingdom (Great Britain)
-
-# Wii U Secondary User/Account Details
-USERNAME = "PutSecondaryNNIDUsernameHere"
-PASSWORD = "PutSecondaryNNIDPasswordHere"
-
-# Wii U Main User/Account NNID
-MAINID = "PutMainNNIDUsernameHere"
 
 
 class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
@@ -36,17 +33,13 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 		if event.type == nintendo_notification.NotificationType.LOGOUT:
 			
 			if name == MAINID:
-				print("Peace!")
-				activity = {
-					
-				}
-				rpc_obj.set_activity(activity)
+				print("Clearing status")
+				RPC.clear()
 			
 		elif event.type == nintendo_notification.NotificationType.PRESENCE_CHANGE:
 			presence = event.data
 			
 			if name == MAINID:
-				print("Gotcha!")
 				
 				title_id = "%016X" %(event.data.game_key.title_id)
 				
@@ -58,7 +51,7 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 					title_name = "MARIO KART 8"
 				elif title_id == "0005000010176A00":
 					title_name = "Splatoon"
-				elif title_id == "00050000101C9500":
+				elif title_id == "00050000101C9400":
 					title_name = "Breath of the Wild"
 				elif title_id == "0005000010180700":
 					title_name = "Captain Toad: Treasure Tracker"
@@ -72,19 +65,15 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 					title_name = "Nintendo eShop"
 				elif title_id == "000500301001620A":
 					title_name = "Miiverse"
-				elif title_id == "000500301001220A":
+				elif title_id == "000500301001210A":
 					title_name = "Internet Browser"
 				elif title_id == "000500101004A200":
 					title_name = "Mii Maker"
 				elif title_id == "000500101005A200":
-					title_name = "Wii U Chat"
-				elif title_id == "0005000010105A00":
-					title_name = "Netflix"
-				elif title_id == "0005000010105700":
-					title_name = "YouTube"
+					title_name = "Twilight Princess HD"
+				elif title_id == "0005000010143500":
+					title_name = "Wind Waker HD"
 				elif title_id == "0005000010102F00":
-					title_name = "Amazon / LOVEFiLM"
-				elif title_id == "0005000010101E00":
 					title_name = "New SUPER MARIO BROS. U"
 				elif title_id == "000500001014B800":
 					title_name = "New SUPER MARIO BROS. U + New SUPER LUIGI U"
@@ -92,28 +81,17 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 					title_name = "SUPER MARIO 3D WORLD"
 				elif title_id == "000500001018DD00":
 					title_name = "Super Mario Maker"
+				elif title_id == "0005000013374842":
+					title_name = "Homebrew Launcher"
 				else:
 					title_name = title_id
 					
 				#idDash = title_id[:8] + "-" + title_id[8:]
 				#print("idDash: " + idDash)
-					
-				start_time = time.time()
+				start_time = int(time.time())
+    
 				print(title_id + " / " + title_name)
-				
-				activity = {
-					"details": title_name,
-					"timestamps": {
-						"start": start_time
-					},
-					"assets": {
-						"small_text": MAINID,
-						"small_image": "nn",
-						"large_text": title_name,
-						"large_image": title_id.lower()
-					}
-				}
-				rpc_obj.set_activity(activity)
+				RPC.update(state=title_name, start=start_time, small_image="nn", small_text=MAINID, large_image=title_id.lower())
 		else:
 			print("Unknown notification type %i (from %s)" %(event.type, name))
 
@@ -136,4 +114,4 @@ backend.login(
 backend.nintendo_notification_server.handler = NotificationHandler()
 
 input("Press enter to disconnect and exit\n")
-backend.close()
+os._exit()
