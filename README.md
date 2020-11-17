@@ -13,6 +13,7 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 	* [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
 	* [Requests](https://pypi.org/project/requests/)
 	* [lxml](https://pypi.org/project/lxml/)
+	* [Pypresence](https://pypi.org/project/pypresence/)
 * [Git](https://git-scm.com/downloads)
 * [Discord](https://www.discordapp.com/)
 ### Wii U
