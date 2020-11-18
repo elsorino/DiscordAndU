@@ -89,3 +89,10 @@ In order to add images, you must create a discord app on the [discord developers
 
 After doing this, go to Rich Presence then art assets and add the image you created/downloaded earlier. Images should now show up if everything is named correctly. The image used for the nnid icon must be named nn.jpg/png
 
+## Issues
+If there is a problem or difficulty with setup, feel free to add me on discord at elso#3228 for some help.
+
+My knowledge is limited, if the script itself has an issue, then I may be unable to fix it
+
+### Requesting a game to be added
+Open an issue with the gameID and official image and I will add it to the default rich presence assets.
