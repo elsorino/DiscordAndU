@@ -12,8 +12,8 @@ from config import (
 )
 from pypresence import Presence
 import time
-import sys
 
+#Change this if you want to use your own
 client_id = '777243864682725406'
 RPC = Presence(client_id,pipe=0)
 RPC.connect()
@@ -45,11 +45,9 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 				
 				if title_id == "0000000000000000":
 					title_name = "Wii U Menu"
-				elif title_id == "000500001010ED00":
-					title_name = "MARIO KART 8"
+				elif title_id == "000500001010EC00":
+					title_name = "Mario Kart 8"
 				elif title_id == "000500001010CD00":
-					title_name = "MARIO KART 8"
-				elif title_id == "0005000010176A00":
 					title_name = "Splatoon"
 				elif title_id == "00050000101C9400":
 					title_name = "Breath of the Wild"
@@ -58,9 +56,9 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 				elif title_id == "0005000010199500":
 					title_name = "Super Mario 64"
 				elif title_id == "0005000010195B00":
-					title_name = "NEW SUPER MARIO BROS."
+					title_name = "New Super Mario Bros."
 				elif title_id == "0005000010172700":
-					title_name = "BAYONETTA 2"
+					title_name = "Bayonetta 2"
 				elif title_id == "000500301001420A":
 					title_name = "Nintendo eShop"
 				elif title_id == "000500301001620A":
@@ -74,15 +72,20 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 				elif title_id == "0005000010143500":
 					title_name = "Wind Waker HD"
 				elif title_id == "0005000010102F00":
-					title_name = "New SUPER MARIO BROS. U"
+					title_name = "New Super Mario Bros. U"
 				elif title_id == "000500001014B800":
-					title_name = "New SUPER MARIO BROS. U + New SUPER LUIGI U"
+					title_name = "New Super Mario Bros. U + New Super Luigi U"
 				elif title_id == "0005000010145D00":
 					title_name = "SUPER MARIO 3D WORLD"
 				elif title_id == "000500001018DD00":
 					title_name = "Super Mario Maker"
 				elif title_id == "0005000013374842":
 					title_name = "Homebrew Launcher"
+				elif title_id == "000500001019d800":
+					title_name = "Xenoblade Chronicles"
+				#Example of what another entry should look like
+     			#elif title_id == "TITLE_ID":
+				#	title_name = "Game Name"
 				else:
 					title_name = title_id
 					
@@ -114,4 +117,3 @@ backend.login(
 backend.nintendo_notification_server.handler = NotificationHandler()
 
 input("Press enter to disconnect and exit\n")
-os._exit()
