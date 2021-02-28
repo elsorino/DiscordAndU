@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from nintendo.nex import backend, authentication, friends, nintendo_notification
 from nintendo import account
 from config import (
@@ -8,13 +9,12 @@ from config import (
 	COUNTRY,
 	USERNAME,
 	PASSWORD,
-	MAINID
+	MAINID,
+	client_id
 )
 from pypresence import Presence
 import time
 
-#Change this if you want to use your own
-client_id = '777243864682725406'
 RPC = Presence(client_id,pipe=0)
 RPC.connect()
 print("RPC connection successful.")
@@ -83,6 +83,8 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 					title_name = "Homebrew Launcher"
 				elif title_id == "000500001019d800":
 					title_name = "Xenoblade Chronicles"
+				elif title_id == "00050000101C4D00":
+				    title_name = "Xenoblade Chronicles X"
 				#Example of what another entry should look like
      			#elif title_id == "TITLE_ID":
 				#	title_name = "Game Name"

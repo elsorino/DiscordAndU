@@ -13,3 +13,4 @@ PASSWORD = ""
 
 # Wii U Main User/Account NNID
 MAINID = ""
+client_id = "777243864682725406"
