@@ -8,8 +8,7 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 
 ## Prerequisites
 ### Software
-* [Python 3.7](https://www.python.org/downloads/)
-	* I recommend using something like pyenv for this
+* Python
 	* [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
 	* [Requests](https://pypi.org/project/requests/)
 	* [lxml](https://pypi.org/project/lxml/)
@@ -22,7 +21,7 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 * Wii U Console Details
 	* Device ID (Best found by using [Pretendo Installer](https://github.com/PretendoNetwork/network-installer))
 	* Serial Number (Found on bottom side at rear of console or in Pretendo Installer)
-	* System Version (0x240 for 5.5.3, 0x250 for 5.5.4)
+	* System Version (0x260 for 5.5.5)
 	* System Region (4 for Europe, 2 for USA)
 	* System Country (GB for UK, US for USA)
 
@@ -39,7 +38,7 @@ Copy `config.example.py` to `config.py`, then open it with your preferred text e
 ```py
 DEVICE_ID = 1111111111
 SERIAL_NUMBER = "xxxxxxxxxxxx"
-SYSTEM_VERSION = 0x240 # 5.5.3
+SYSTEM_VERSION = 0x260 # 5.5.3
 REGION = 4 # Europe (PAL)
 COUNTRY = "GB" # United Kingdom (Great Britain)
 ```
@@ -87,12 +86,7 @@ If you wish to use official images, the tool [idbe-decryptp](https://github.com/
 
 In order to add images, you must create a discord app on the [discord developers page](https://discord.gg/developers), Name the app what you want the status to show up as below your name(e.g the default one is named Wii U) then create.
 
-After doing this, go to Rich Presence then art assets and add the image you created/downloaded earlier. Images should now show up if everything is named correctly. The image used for the nnid icon must be named nn.jpg/png
+After doing this, go to Rich Presence art assets and add the image you created/downloaded earlier. Images should now show up if everything is named correctly. The image used for the nnid icon must be named nn.jpg/png
 
 ## Issues
 If there is a problem or difficulty with setup, feel free to add me on discord at elso#3228 for some help.
-
-My knowledge is limited, if the script itself has an issue, then I may be unable to fix it
-
-### Requesting a game to be added
-Open an issue with the gameID and official image and I will add it to the default rich presence assets.

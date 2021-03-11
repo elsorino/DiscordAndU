@@ -1,48 +1,44 @@
-#!/usr/bin/env python3
-from nintendo.nex import backend, authentication, friends, nintendo_notification
-from nintendo import account
+
+from nintendo.nex import backend, authentication, notification
+from nintendo.games import Friends
+from nintendo import nnas
+from pypresence import Presence
+import time
 from config import (
 	DEVICE_ID,
 	SERIAL_NUMBER,
 	SYSTEM_VERSION,
 	REGION,
 	COUNTRY,
+	LANGUAGE,
 	USERNAME,
 	PASSWORD,
 	MAINID,
 	client_id
 )
-from pypresence import Presence
-import time
-
 RPC = Presence(client_id,pipe=0)
 RPC.connect()
 print("RPC connection successful.")
 
-
-class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
+class NotificationServer(notification.NintendoNotificationServer):
 	def __init__(self):
+		super().__init__()
 		self.name_cache = {}
-
-	def process_notification_event(self, event):
+		
+	def process_nintendo_notification_event(self, context, event):
 		pid = event.pid
 		if pid not in self.name_cache:
-			self.name_cache[pid] = api.get_nnid(pid)
+			self.name_cache[pid] = nnas.get_nnid(pid)
 		name = self.name_cache[pid]
 		
-		if event.type == nintendo_notification.NotificationType.LOGOUT:
-			
+		if event.type == notification.NintendoNotificationType.LOGOUT:
 			if name == MAINID:
 				print("Clearing status")
 				RPC.clear()
 			
-		elif event.type == nintendo_notification.NotificationType.PRESENCE_CHANGE:
-			presence = event.data
-			
+		elif event.type == notification.NintendoNotificationType.PRESENCE_CHANGE:
 			if name == MAINID:
-				
 				title_id = "%016X" %(event.data.game_key.title_id)
-				
 				if title_id == "0000000000000000":
 					title_name = "Wii U Menu"
 				elif title_id == "000500001010EC00":
@@ -90,32 +86,36 @@ class NotificationHandler(nintendo_notification.NintendoNotificationHandler):
 				#	title_name = "Game Name"
 				else:
 					title_name = title_id
-					
-				#idDash = title_id[:8] + "-" + title_id[8:]
-				#print("idDash: " + idDash)
 				start_time = int(time.time())
     
 				print(title_id + " / " + title_name)
 				RPC.update(state=title_name, start=start_time, small_image="nn", small_text=MAINID, large_image=title_id.lower())
+				
 		else:
 			print("Unknown notification type %i (from %s)" %(event.type, name))
+		
+	def process_presence_change_event(self, context, event):
+		self.process_nintendo_notification_event(context, event)
 
-api = account.AccountAPI()
-api.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION, REGION, COUNTRY)
-api.set_title(friends.FriendsTitle.TITLE_ID_EUR, friends.FriendsTitle.LATEST_VERSION)
-api.login(USERNAME, PASSWORD)
 
-nex_token = api.get_nex_token(friends.FriendsTitle.GAME_SERVER_ID)
-backend = backend.BackEndClient(
-	friends.FriendsTitle.ACCESS_KEY,
-	friends.FriendsTitle.NEX_VERSION,
-	backend.Settings("friends.cfg")
-)
+nnas = nnas.NNASClient()
+nnas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
+nnas.set_locale(REGION, COUNTRY, LANGUAGE)
+nnas.set_title(Friends.TITLE_ID_EUR, Friends.LATEST_VERSION)
+nnas.login(USERNAME, PASSWORD)
+
+nex_token = nnas.get_nex_token(Friends.GAME_SERVER_ID)
+backend = backend.BackEndClient("friends.cfg")
+backend.configure(Friends.ACCESS_KEY, Friends.NEX_VERSION)
 backend.connect(nex_token.host, nex_token.port)
+
+login_data = authentication.NintendoLoginData()
+login_data.token = nex_token.token
 backend.login(
 	nex_token.username, nex_token.password, None,
-	authentication.NintendoLoginData(nex_token.token)
+	login_data
 )
-backend.nintendo_notification_server.handler = NotificationHandler()
+backend.secure_client.register_server(NotificationServer())
 
 input("Press enter to disconnect and exit\n")
+backend.close()

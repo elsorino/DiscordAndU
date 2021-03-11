@@ -1,0 +1,33 @@
+
+protocol SecureConnection : 11 {
+	struct ConnectionData {
+		stationurl station;
+		uint32 connection_id;
+	}
+	
+	method register(list<stationurl> urls) {
+		result result;
+		uint32 connection_id;
+		stationurl public_station;
+	}
+	
+	method request_connection_data(uint32 cid, pid pid) {
+		bool result;
+		list<ConnectionData> connection_data;
+	}
+	
+	method request_urls(uint32 cid, pid pid) {
+		bool result;
+		list<stationurl> urls;
+	}
+	
+	method register_ex(list<stationurl> urls, anydata login_data) {
+		result result;
+		uint32 connection_id;
+		stationurl public_station;
+	}
+	
+	method test_connectivity() {}
+	method replace_url(stationurl url, stationurl new) {}
+	method send_report(uint32 report_id, qbuffer data) {}
+}

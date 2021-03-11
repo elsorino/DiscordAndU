@@ -33,6 +33,17 @@ class Socket(Event):
 		data = self.socket.recv()
 		if data is not None:
 			self.trigger(data)
+			
+			
+class Server(Event):
+	def __init__(self, callback, param, socket):
+		super().__init__(callback, param)
+		self.socket = socket
+		
+	def update(self):
+		client = self.socket.accept()
+		if client is not None:
+			self.trigger(client)
 
 		
 class Timeout(Event):
@@ -55,6 +66,14 @@ class Timeout(Event):
 		self.deadline = time.time() + self.timeout
 		
 		
+class Callback(Event):
+	def __init__(self, callback, param):
+		super().__init__(callback, param)
+		
+	def update(self):
+		self.trigger()
+		
+		
 thread = None
 events = []
 
@@ -64,10 +83,22 @@ def add_socket(callback, socket, param=None):
 	event = Socket(callback, param, socket)
 	events.append(event)
 	return event
+	
+def add_server(callback, socket, param=None):
+	start_thread()
+	event = Server(callback, param, socket)
+	events.append(event)
+	return event
 
 def add_timeout(callback, timeout, repeat=False, param=None):
 	start_thread()
 	event = Timeout(callback, param, timeout, repeat)
+	events.append(event)
+	return event
+	
+def add_callback(callback, param=None):
+	start_thread()
+	event = Callback(callback, param)
 	events.append(event)
 	return event
 	
@@ -77,7 +108,8 @@ def remove(event):
 def process_events():
 	for event in events[:]:
 		try:
-			event.update()
+			if event in events:
+				event.update()
 		except:
 			logger.error("An exception occurred while processing an event")
 			import traceback
@@ -87,6 +119,7 @@ def process_events():
 def update():
 	if threading.current_thread() == thread:
 		process_events()
+	time.sleep(0.02)
 
 def start_thread():
 	global thread

@@ -43,6 +43,14 @@ class StreamOut:
 	def s32(self, value): self.write(struct.pack(self.endian + "i", value))
 	def s64(self, value): self.write(struct.pack(self.endian + "q", value))
 	
+	def u24(self, value):
+		if self.endian == ">":
+			self.u16(value >> 8)
+			self.u8(value & 0xFF)
+		else:
+			self.u8(value & 0xFF)
+			self.u16(value >> 8)
+			
 	def float(self, value): self.write(struct.pack(self.endian + "f", value))
 	def double(self, value): self.write(struct.pack(self.endian + "d", value))
 	
@@ -71,11 +79,18 @@ class StreamIn:
 	def skip(self, num): self.pos += num
 	def align(self, num): self.pos += (num - self.pos % num) % num
 	def eof(self): return self.pos >= len(self.data)
+	def available(self): return len(self.data) - self.pos
+	
+	def peek(self, num):
+		return self.data[self.pos : self.pos + num]
 		
 	def read(self, num):
 		data = self.data[self.pos : self.pos + num]
 		self.pos += num
 		return data
+		
+	def readall(self):
+		return self.read(self.available())
 		
 	def pad(self, num, char=b"\0"):
 		if self.read(num) != char * num:
@@ -93,6 +108,11 @@ class StreamIn:
 	def s16(self): return struct.unpack(self.endian + "h", self.read(2))[0]
 	def s32(self): return struct.unpack(self.endian + "i", self.read(4))[0]
 	def s64(self): return struct.unpack(self.endian + "q", self.read(8))[0]
+	
+	def u24(self):
+		if self.endian == ">":
+			return (self.u16() << 8) | self.u8()
+		return self.u8() | (self.u16() << 8)
 	
 	def float(self): return struct.unpack(self.endian + "f", self.read(4))[0]
 	def double(self): return struct.unpack(self.endian + "d", self.read(8))[0]

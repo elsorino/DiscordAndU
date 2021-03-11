@@ -1,121 +1,163 @@
 
-from nintendo.nex import nat, notification, nintendo_notification, \
-	authentication, secure, friends, common
-import pkg_resources
+from nintendo.nex import account, authentication, common, datastore, \
+	friends, kerberos, matchmaking, notification, ranking, secure, \
+	service, nattraversal
+from nintendo.settings import Settings
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-class Settings:
-
-	TRANSPORT_UDP = 0
-	TRANSPORT_TCP = 1
-	TRANSPORT_WEBSOCKET = 2
-	
-	field_types = {
-		"prudp.transport": int,
-		"prudp.version": int,
-		"prudp.stream_type": int,
-		"prudp.fragment_size": int,
-		"prudp.resend_timeout": float,
-		"prudp.ping_timeout": float,
-		"prudp.silence_timeout": float,
-		"prudp.signature_version": int,
-
-		"kerberos.key_size": int,
-		"kerberos.key_derivation": int,
-		
-		"common.int_size": int,
-		
-		"server.version": int,
-		"server.access_key": str.encode
-	}
-
-	def __init__(self, filename=None):
-		self.settings = {}
-		self.reset()
-		if filename:
-			self.load(filename)
-		
-	def reset(self): self.load("default.cfg")
-	def copy(self):
-		copy = Settings()
-		copy.settings = self.settings.copy()
-		return copy
-	
-	def get(self, field): return self.settings[field]
-	def set(self, field, value):
-		if field not in self.field_types:
-			raise ValueError("Unknown setting: %s" %field)
-		self.settings[field] = self.field_types[field](value)
-
-	def load(self, filename):
-		filename = pkg_resources.resource_filename("nintendo", "files/%s" %filename)
-		with open(filename) as f:
-			linenum = 1
-			for line in f:
-				line = line.strip()
-				if line:
-					if "=" in line:
-						field, value = line.split("=", 1)
-						self.set(field.strip(), value.strip())
-					else:
-						raise ValueError("Syntax error at line %i" %linenum)
-				linenum += 1
+class LoginResult:
+	def __init__(self, pid, ticket, ticket_key, secure_station):
+		self.pid = pid
+		self.ticket = ticket
+		self.ticket_key = ticket_key
+		self.secure_station = secure_station
 
 
 class BackEndClient:
-	def __init__(self, access_key, version, settings=None):
-		if settings:
+	def __init__(self, settings=None):
+		if isinstance(settings, Settings):
 			self.settings = settings.copy()
 		else:
-			self.settings = Settings()
-		self.settings.set("server.access_key", access_key)
-		self.settings.set("server.version", version)
+			self.settings = Settings(settings)
 		
-		self.auth_client = None
-		self.secure_client = None
+		self.auth_client = service.RMCClient(self.settings)
+		self.secure_client = service.RMCClient(self.settings)
 		
-		self.nat_traversal_server = nat.NATTraversalServer()
-		self.notification_server = notification.NotificationServer()
-		self.nintendo_notification_server = nintendo_notification.NintendoNotificationServer()
-
-		self.protocol_map = {
-			self.nat_traversal_server.PROTOCOL_ID: self.nat_traversal_server,
-			self.notification_server.PROTOCOL_ID: self.notification_server,
-			self.nintendo_notification_server.PROTOCOL_ID: self.nintendo_notification_server
-		}
+		self.auth_proto = authentication.AuthenticationClient(self.auth_client)
+		self.secure_proto = secure.SecureConnectionClient(self.secure_client)
+		
+		if self.settings.get("kerberos.key_derivation") == 0:
+			self.key_derivation = kerberos.KeyDerivationOld(65000, 1024)
+		else:
+			self.key_derivation = kerberos.KeyDerivationNew(1, 1)
+			
+		self.pid = None
+		self.local_station = None
+		self.public_station = None
+	
+	def configure(self, access_key, nex_version, client_version=None):
+		self.settings.set("nex.access_key", access_key)
+		self.settings.set("nex.version", nex_version)
+		if nex_version >= 40400:
+			if client_version is None:
+				raise ValueError("Must specify client version for NEX 4.4.0 or later")
+			self.settings.set("nex.client_version", client_version)
+		self.auth_client.set_access_key(access_key)
+		self.secure_client.set_access_key(access_key)
 		
 	def connect(self, host, port):
-		self.auth_addr = host, port
-		self.auth_client = authentication.AuthenticationClient(self)
-		self.auth_client.connect(host, port)
+		# Connect to authentication server
+		if not self.auth_client.connect(host, port, 1):
+			raise ConnectionError("Couldn't connect to authentication server")
 		
 	def close(self):
 		self.auth_client.close()
-		if self.secure_client:
-			self.secure_client.close()
+		self.secure_client.close()
 		
-	def login(self, username, password, auth_info=None, login_data=None):
-		if auth_info:
-			self.auth_client.login_ex(username, password, auth_info)
+	def login(self, username, password=None, auth_info=None, login_data=None):
+		if self.settings.get("nex.version") < 40400:
+			result = self.login_normal(username, auth_info)
 		else:
-			self.auth_client.login(username, password)
+			result = self.login_with_param(username, auth_info)
+		
+		self.pid = result.pid
+		
+		secure_station = result.secure_station
+		
+		kerberos_key = result.ticket_key
+		if not kerberos_key:
+			if password is None:
+				raise ValueError("A password is required for this account")
+			
+			# Derive kerberos key from password
+			kerberos_key = self.key_derivation.derive_key(
+				password.encode(), self.pid
+			)
+		
+		# Decrypt ticket from login response
+		ticket = kerberos.ClientTicket()
+		ticket.decrypt(result.ticket, kerberos_key, self.settings)
+		
+		if ticket.target_pid != secure_station["PID"]:
+			# Request ticket for secure server
+			response = self.auth_proto.request_ticket(
+				self.pid, secure_station["PID"]
+			)
+			
+			# Check for errors and decrypt ticket
+			response.result.raise_if_error()
+			ticket = kerberos.ClientTicket()
+			ticket.decrypt(response.ticket, kerberos_key, self.settings)
+			
+		ticket.source_pid = self.pid
+		ticket.target_cid = secure_station["CID"]
 
-		ticket = self.auth_client.request_ticket()
-		host = self.auth_client.secure_station["address"]
-		port = self.auth_client.secure_station["port"]
+		# The secure server may reside at the same
+		# address as the authentication server
+		host = secure_station["address"]
+		port = secure_station["port"]
 		if host == "0.0.0.1":
-			host, port = self.auth_addr
+			host, port = self.auth_client.remote_address()
+
+		# Connect to secure server
+		server_sid = secure_station["sid"]
+		if not self.secure_client.connect(host, port, server_sid, ticket):
+			raise ConnectionError("Couldn't connect to secure server")
 		
-		self.secure_client = secure.SecureClient(self, ticket)
-		self.secure_client.connect(host, port)
+		# Create a stationurl for our local client address
+		client_addr = self.secure_client.local_address()
+		self.local_station = common.StationURL(
+			address=client_addr[0], port=client_addr[1],
+			sid=self.secure_client.stream_id(),
+			natm=0, natf=0, upnp=0, pmp=0
+		)
+		
+		# Register urls on secure server
 		if login_data:
-			urls = self.secure_client.register_urls(login_data)
+			response = self.secure_proto.register_ex([self.local_station], login_data)
 		else:
-			urls = self.secure_client.register_urls()
-		self.local_station, self.public_station = urls
+			response = self.secure_proto.register([self.local_station])
+
+		# Check for errors and update urls
+		response.result.raise_if_error()
+		self.public_station = response.public_station
+		self.public_station["RVCID"] = response.connection_id
+		self.local_station["RVCID"] = response.connection_id
+		
+	def login_normal(self, username, auth_info):
+		if auth_info:
+			response = self.auth_proto.login_ex(username, auth_info)
+		else:
+			response = self.auth_proto.login(username)			
+		response.result.raise_if_error()
+		return LoginResult(
+			response.pid, response.ticket, None,
+			response.connection_data.main_station
+		)
+		
+	def login_with_param(self, username, auth_info):
+		param = authentication.ValidateAndRequestTicketParam()
+		param.username = username
+		if auth_info:
+			param.data = auth_info
+		else:
+			param.data = common.NullData()
+		param.nex_version = self.settings.get("nex.version")
+		param.client_version = self.settings.get("nex.client_version")
+		
+		response = self.auth_proto.login_with_param(param)
+		
+		return LoginResult(
+			response.pid, response.ticket,
+			bytes.fromhex(response.ticket_key),
+			response.server_url
+		)
 		
 	def login_guest(self):
 		self.login("guest", "MMQea3n!fsik")
+		
+	def get_pid(self):
+		return self.pid
