@@ -8,11 +8,7 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 
 ## Prerequisites
 ### Software
-* Python
-	* [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
-	* [Requests](https://pypi.org/project/requests/)
-	* [lxml](https://pypi.org/project/lxml/)
-	* [Pypresence](https://pypi.org/project/pypresence/)
+* [Python](https://www.python.org/downloads/)
 * [Git](https://git-scm.com/downloads)
 * [Discord](https://www.discordapp.com/)
 ### Wii U
@@ -29,6 +25,7 @@ This Python program uses code from [NintendoClients](https://github.com/Kinnay/N
 In a terminal window, enter the following:
 ```bash
 git clone https://github.com/elsorino/DiscordAndU.git && cd DiscordAndU
+pip install -r requirements.txt
 ```
 
 ## Configuration 
